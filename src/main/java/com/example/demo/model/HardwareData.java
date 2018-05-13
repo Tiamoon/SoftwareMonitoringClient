@@ -12,9 +12,34 @@ public class HardwareData {
     private Long foundSoftware;
     private Long recognizedSoftware;
     private Long unknownSoftware;
+    private String manufacturer;
+    private String system;
     private List<InstalledSoftware> softwareList;
 
     public HardwareData() {
+    }
+
+    public HardwareData(String ipAddress, String mac, String manufacturer, String system) {
+        this.ipAddress = ipAddress;
+        this.mac = mac;
+        this.manufacturer = manufacturer;
+        this.system = system;
+    }
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
     public Long getFoundSoftware() {

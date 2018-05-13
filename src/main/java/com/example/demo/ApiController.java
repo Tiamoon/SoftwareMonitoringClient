@@ -12,6 +12,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -22,16 +23,19 @@ import java.util.Objects;
 @EnableAutoConfiguration
 public class ApiController {
 
+    String ipAddress;
+    StringBuilder macBuilder;
+
     @RequestMapping("/installedSoftware")
     @ResponseBody
     HardwareData getInstalledSoftware() throws UnknownHostException, SocketException {
 
         HardwareData hardwareData = new HardwareData();
 
-        String ipAddress = InetAddress.getLocalHost().getHostAddress();
+        ipAddress = InetAddress.getLocalHost().getHostAddress();
         byte[] mac = NetworkInterface.getByInetAddress(InetAddress.getByName(ipAddress)).getHardwareAddress();
 
-        StringBuilder macBuilder = new StringBuilder();
+        macBuilder = new StringBuilder();
         for (int i = 0; i < mac.length; i++) {
             macBuilder.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
         }
@@ -47,13 +51,31 @@ public class ApiController {
         hardwareData.setRecognizedSoftware(recognizedSoftwareCount);
         hardwareData.setUnknownSoftware(unknownSoftwareCount);
         hardwareData.setSoftwareList(installedSoftwareList);
+        hardwareData.setSystem(System.getProperty("os.name"));
 
         return hardwareData;
     }
 
     @RequestMapping("/available")
     @ResponseBody
-    String isAvailable() {
-        return "OK";
+    HardwareData isAvailable() throws UnknownHostException, SocketException {
+
+        ipAddress = InetAddress.getLocalHost().getHostAddress();
+        byte[] mac = NetworkInterface.getByInetAddress(InetAddress.getByName(ipAddress)).getHardwareAddress();
+
+
+        macBuilder = new StringBuilder();
+        for (int i = 0; i < mac.length; i++) {
+            macBuilder.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+        }
+
+
+        HardwareData hardwareData = new HardwareData();
+        hardwareData.setIpAddress(ipAddress);
+        hardwareData.setMac(macBuilder.toString());
+        hardwareData.setManufacturer("");
+        hardwareData.setSystem(System.getProperty("os.name"));
+
+        return hardwareData;
     }
 }
