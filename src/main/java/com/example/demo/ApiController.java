@@ -2,15 +2,14 @@ package com.example.demo;
 
 import com.example.demo.model.HardwareData;
 import com.example.demo.model.InstalledSoftware;
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -58,7 +57,7 @@ public class ApiController {
 
     @RequestMapping("/available")
     @ResponseBody
-    HardwareData isAvailable() throws UnknownHostException, SocketException {
+    HardwareData isAvailable(HttpServletRequest request) throws UnknownHostException, SocketException, URISyntaxException {
 
         ipAddress = InetAddress.getLocalHost().getHostAddress();
         byte[] mac = NetworkInterface.getByInetAddress(InetAddress.getByName(ipAddress)).getHardwareAddress();
@@ -71,11 +70,17 @@ public class ApiController {
 
 
         HardwareData hardwareData = new HardwareData();
-        hardwareData.setIpAddress(ipAddress);
+        hardwareData.setIpAddress(getDomainName(String.valueOf(request.getRequestURL())));
         hardwareData.setMac(macBuilder.toString());
         hardwareData.setManufacturer("");
         hardwareData.setSystem(System.getProperty("os.name"));
 
         return hardwareData;
+    }
+
+    public static String getDomainName(String url) throws URISyntaxException {
+        URI uri = new URI(url);
+        String domain = uri.getHost();
+        return domain.startsWith("www.") ? domain.substring(4) : domain;
     }
 }
