@@ -17,6 +17,8 @@ public class SoftwareRecognizer {
     static String s = REGQUERY_UTIL + "HKEY_LOCAL_MACHINE\\Software"
             + "\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
 
+    static String s2 = REGQUERY_UTIL + "HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\BIOS";
+
     public static String getCurrentUserPersonalFolderPath() {
         try {
             Process process = Runtime.getRuntime().exec(s);

@@ -4,14 +4,13 @@ import com.example.demo.model.HardwareData;
 import com.example.demo.model.InstalledSoftware;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
 import java.net.*;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -27,7 +26,7 @@ public class ApiController {
 
     @RequestMapping("/installedSoftware")
     @ResponseBody
-    HardwareData getInstalledSoftware(HttpServletRequest request) throws UnknownHostException, SocketException {
+    HardwareData getInstalledSoftware(HttpServletRequest request) throws IOException, InterruptedException {
 
         HardwareData hardwareData = new HardwareData();
 
@@ -51,13 +50,14 @@ public class ApiController {
         hardwareData.setUnknownSoftware(unknownSoftwareCount);
         hardwareData.setSoftwareList(installedSoftwareList);
         hardwareData.setSystem(System.getProperty("os.name"));
+        hardwareData.setManufacturer(getManufacturer());
 
         return hardwareData;
     }
 
     @RequestMapping("/available")
     @ResponseBody
-    HardwareData isAvailable(HttpServletRequest request) throws UnknownHostException, SocketException, URISyntaxException {
+    HardwareData isAvailable(HttpServletRequest request) throws IOException, URISyntaxException, InterruptedException {
 
         ipAddress = getClientIp(request);
         byte[] mac = NetworkInterface.getByInetAddress(InetAddress.getByName(ipAddress)).getHardwareAddress();
@@ -71,7 +71,7 @@ public class ApiController {
         HardwareData hardwareData = new HardwareData();
         hardwareData.setIpAddress(ipAddress);
         hardwareData.setMac(macBuilder.toString());
-        hardwareData.setManufacturer("");
+        hardwareData.setManufacturer(getManufacturer());
         hardwareData.setSystem(System.getProperty("os.name"));
 
         return hardwareData;
@@ -89,5 +89,34 @@ public class ApiController {
         }
 
         return remoteAddr;
+    }
+
+    private static String getManufacturer() throws IOException, InterruptedException {
+
+//        Process process = Runtime.getRuntime().exec("reg query HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\BIOS");
+//        SoftwareRecognizer.StreamReader reader = new SoftwareRecognizer.StreamReader(process.getInputStream());
+//
+//        reader.start();
+//        process.waitFor();
+//        reader.join();
+//
+//        String result = reader.getResult();
+//        int p = result.indexOf("REG_SZ");
+//
+//        String[] cokolwiek = result.substring(p + "REG_SZ".length()).trim().split("\n");
+
+
+        Process nameProcess = null;
+        nameProcess = Runtime.getRuntime().exec("reg query " +
+                '"' + "HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\BIOS" + "\" /v SystemProductName");
+
+        SoftwareRecognizer.StreamReader nameReader = new SoftwareRecognizer.StreamReader(nameProcess.getInputStream());
+        nameReader.start();
+        nameProcess.waitFor();
+        nameReader.join();
+
+        String[] name = nameReader.getResult().split("REG_SZ");
+
+        return name[name.length -1].trim();
     }
 }
