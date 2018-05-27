@@ -27,11 +27,11 @@ public class ApiController {
 
     @RequestMapping("/installedSoftware")
     @ResponseBody
-    HardwareData getInstalledSoftware() throws UnknownHostException, SocketException {
+    HardwareData getInstalledSoftware(HttpServletRequest request) throws UnknownHostException, SocketException {
 
         HardwareData hardwareData = new HardwareData();
 
-        ipAddress = InetAddress.getLocalHost().getHostAddress();
+        ipAddress = getClientIp(request);
         byte[] mac = NetworkInterface.getByInetAddress(InetAddress.getByName(ipAddress)).getHardwareAddress();
 
         macBuilder = new StringBuilder();
@@ -59,7 +59,7 @@ public class ApiController {
     @ResponseBody
     HardwareData isAvailable(HttpServletRequest request) throws UnknownHostException, SocketException, URISyntaxException {
 
-        ipAddress = InetAddress.getLocalHost().getHostAddress();
+        ipAddress = getClientIp(request);
         byte[] mac = NetworkInterface.getByInetAddress(InetAddress.getByName(ipAddress)).getHardwareAddress();
 
 
@@ -68,9 +68,8 @@ public class ApiController {
             macBuilder.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
         }
 
-
         HardwareData hardwareData = new HardwareData();
-        hardwareData.setIpAddress(getDomainName(String.valueOf(request.getRequestURL())));
+        hardwareData.setIpAddress(ipAddress);
         hardwareData.setMac(macBuilder.toString());
         hardwareData.setManufacturer("");
         hardwareData.setSystem(System.getProperty("os.name"));
@@ -78,9 +77,17 @@ public class ApiController {
         return hardwareData;
     }
 
-    public static String getDomainName(String url) throws URISyntaxException {
-        URI uri = new URI(url);
-        String domain = uri.getHost();
-        return domain.startsWith("www.") ? domain.substring(4) : domain;
+    private static String getClientIp(HttpServletRequest request) {
+
+        String remoteAddr = "";
+
+        if (request != null) {
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteAddr == null || "".equals(remoteAddr)) {
+                remoteAddr = request.getRemoteAddr();
+            }
+        }
+
+        return remoteAddr;
     }
 }
