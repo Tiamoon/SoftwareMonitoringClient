@@ -78,34 +78,10 @@ public class ApiController {
     }
 
     private static String getClientIp(HttpServletRequest request) {
-
-        String remoteAddr = "";
-
-        if (request != null) {
-            remoteAddr = request.getHeader("X-FORWARDED-FOR");
-            if (remoteAddr == null || "".equals(remoteAddr)) {
-                remoteAddr = request.getRemoteAddr();
-            }
-        }
-
-        return remoteAddr;
+        return request.getServerName();
     }
 
     private static String getManufacturer() throws IOException, InterruptedException {
-
-//        Process process = Runtime.getRuntime().exec("reg query HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\BIOS");
-//        SoftwareRecognizer.StreamReader reader = new SoftwareRecognizer.StreamReader(process.getInputStream());
-//
-//        reader.start();
-//        process.waitFor();
-//        reader.join();
-//
-//        String result = reader.getResult();
-//        int p = result.indexOf("REG_SZ");
-//
-//        String[] cokolwiek = result.substring(p + "REG_SZ".length()).trim().split("\n");
-
-
         Process nameProcess = null;
         nameProcess = Runtime.getRuntime().exec("reg query " +
                 '"' + "HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\BIOS" + "\" /v SystemProductName");
