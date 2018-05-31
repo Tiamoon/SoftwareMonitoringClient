@@ -50,7 +50,7 @@ public class ApiController {
         hardwareData.setUnknownSoftware(unknownSoftwareCount);
         hardwareData.setSoftwareList(installedSoftwareList);
         hardwareData.setSystem(System.getProperty("os.name"));
-        hardwareData.setManufacturer(getManufacturer());
+        hardwareData.setModel(getManufacturer());
 
         return hardwareData;
     }
@@ -71,7 +71,7 @@ public class ApiController {
         HardwareData hardwareData = new HardwareData();
         hardwareData.setIpAddress(ipAddress);
         hardwareData.setMac(macBuilder.toString());
-        hardwareData.setManufacturer(getManufacturer());
+        hardwareData.setModel(getManufacturer());
         hardwareData.setSystem(System.getProperty("os.name"));
 
         return hardwareData;

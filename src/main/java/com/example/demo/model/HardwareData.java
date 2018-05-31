@@ -12,17 +12,17 @@ public class HardwareData {
     private Long foundSoftware;
     private Long recognizedSoftware;
     private Long unknownSoftware;
-    private String manufacturer;
+    private String model;
     private String system;
     private List<InstalledSoftware> softwareList;
 
     public HardwareData() {
     }
 
-    public HardwareData(String ipAddress, String mac, String manufacturer, String system) {
+    public HardwareData(String ipAddress, String mac, String model, String system) {
         this.ipAddress = ipAddress;
         this.mac = mac;
-        this.manufacturer = manufacturer;
+        this.model = model;
         this.system = system;
     }
 
@@ -34,12 +34,12 @@ public class HardwareData {
         this.system = system;
     }
 
-    public String getManufacturer() {
-        return manufacturer;
+    public String getModel() {
+        return model;
     }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
+    public void setModel(String model) {
+        this.model = model;
     }
 
     public Long getFoundSoftware() {
