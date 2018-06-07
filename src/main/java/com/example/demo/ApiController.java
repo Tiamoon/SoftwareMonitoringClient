@@ -50,7 +50,7 @@ public class ApiController {
         hardwareData.setUnknownSoftware(unknownSoftwareCount);
         hardwareData.setSoftwareList(installedSoftwareList);
         hardwareData.setSystem(System.getProperty("os.name"));
-        hardwareData.setModel(getManufacturer());
+        hardwareData.setModel(getModel());
 
         return hardwareData;
     }
@@ -71,7 +71,7 @@ public class ApiController {
         HardwareData hardwareData = new HardwareData();
         hardwareData.setIpAddress(ipAddress);
         hardwareData.setMac(macBuilder.toString());
-        hardwareData.setModel(getManufacturer());
+        hardwareData.setModel(getModel());
         hardwareData.setSystem(System.getProperty("os.name"));
 
         return hardwareData;
@@ -81,10 +81,10 @@ public class ApiController {
         return request.getServerName();
     }
 
-    private static String getManufacturer() throws IOException, InterruptedException {
+    private static String getModel() throws IOException, InterruptedException {
         Process nameProcess = null;
         nameProcess = Runtime.getRuntime().exec("reg query " +
-                '"' + "HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\BIOS" + "\" /v SystemProductName");
+                '"' + "HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\BIOS" + "\" /v SystemManufacturer");
 
         SoftwareRecognizer.StreamReader nameReader = new SoftwareRecognizer.StreamReader(nameProcess.getInputStream());
         nameReader.start();
